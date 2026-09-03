@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grupo Fiscal Contable &mdash; Servicios Generales</title>
+<meta name="description" content="Presentaci&oacute;n de servicios de Grupo Fiscal Contable.">
+<meta name="theme-color" content="#0b1f2a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b1f2a'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='15' fill='%23c9a24a' text-anchor='middle'%3EGFC%3C/text%3E%3C/svg%3E">
+<meta property="og:title" content="Grupo Fiscal Contable &mdash; Servicios Generales">
+<meta property="og:type" content="website">
+<meta property="og:image" content="diapositivas/01.jpg">
+<style>
+  :root{
+    --bg:#0b1f2a;
+    --menu-bg:#0e2530;
+    --menu-border:rgba(255,255,255,.08);
+    --accent:#c9a24a;
+    --fg:#f4f7f9;
+    --muted:rgba(244,247,249,.62);
+    --menu-w:270px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    overflow:hidden;-webkit-tap-highlight-color:transparent}
+
+  #app{display:flex;height:100%;width:100%}
+
+  /* ---------- sidebar ---------- */
+  #sidebar{width:var(--menu-w);flex:0 0 var(--menu-w);height:100%;
+    background:var(--menu-bg);border-right:1px solid var(--menu-border);
+    display:flex;flex-direction:column;transition:margin-left .28s ease;z-index:30}
+  body.nomenu #sidebar{margin-left:calc(-1 * var(--menu-w))}
+
+  #sidebar .brand{padding:15px 16px 12px 54px;border-bottom:1px solid var(--menu-border)}
+  #sidebar .brand b{display:block;font-size:12px;letter-spacing:.09em;color:var(--fg);line-height:1.3}
+  #sidebar .brand span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+
+  #toc{list-style:none;margin:0;padding:8px 0;overflow-y:auto;flex:1;scrollbar-width:thin}
+  #toc li{margin:0}
+  #toc button{all:unset;display:flex;gap:10px;width:100%;cursor:pointer;
+    padding:9px 16px 9px 14px;font-size:13px;line-height:1.32;color:var(--muted);
+    border-left:3px solid transparent;transition:background .12s,color .12s}
+  #toc button:hover{background:rgba(255,255,255,.05);color:var(--fg)}
+  #toc button .num{flex:0 0 22px;text-align:right;font-variant-numeric:tabular-nums;
+    font-size:11.5px;opacity:.65;padding-top:1px}
+  #toc li.current button{color:var(--fg);background:rgba(201,162,74,.14);
+    border-left-color:var(--accent);font-weight:600}
+
+  /* ---------- stage ---------- */
+  #stage{position:relative;flex:1 1 auto;height:100%;min-width:0;overflow:hidden}
+  #frame{position:absolute;inset:0}
+  .slide{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+    opacity:0;transition:opacity .14s linear;background:var(--bg);z-index:1}
+  .slide.active{opacity:1;z-index:2}
+
+  /* click zones */
+  .nav-zone{position:absolute;top:0;bottom:0;width:20%;cursor:pointer;z-index:5;
+    border:0;background:transparent;padding:0}
+  .nav-zone.prev{left:0}
+  .nav-zone.next{right:0}
+  @media (hover:hover){
+    .nav-zone.prev:hover{background:linear-gradient(90deg,rgba(0,0,0,.25),transparent)}
+    .nav-zone.next:hover{background:linear-gradient(270deg,rgba(0,0,0,.25),transparent)}
+  }
+
+  /* menu toggle (always available) */
+  #menu-toggle{position:fixed;top:11px;left:11px;z-index:45;width:38px;height:38px;
+    border:1px solid rgba(255,255,255,.16);border-radius:9px;cursor:pointer;
+    background:rgba(11,31,42,.66);backdrop-filter:blur(6px);color:var(--fg);
+    font-size:17px;display:grid;place-items:center;opacity:0;transition:opacity .3s}
+  body.ui #menu-toggle,#menu-toggle:hover,body.nomenu #menu-toggle{opacity:1}
+  @media (min-width:821px){ body:not(.nomenu) #menu-toggle{opacity:1} }
+
+  /* control bar */
+  #bar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);
+    display:flex;align-items:center;gap:6px;z-index:20;
+    background:rgba(11,31,42,.72);backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.14);border-radius:999px;
+    padding:6px 8px;opacity:0;transition:opacity .35s;font-size:14px;pointer-events:none}
+  body.ui #bar,#bar:hover{opacity:1;pointer-events:auto}
+  #bar button{all:unset;cursor:pointer;color:var(--fg);width:34px;height:34px;
+    border-radius:50%;display:grid;place-items:center;font-size:16px;line-height:1}
+  #bar button:hover{background:rgba(255,255,255,.18)}
+  #counter{min-width:64px;text-align:center;font-variant-numeric:tabular-nums;
+    letter-spacing:.5px;opacity:.9;padding:0 4px;cursor:default}
+
+  #progress{position:fixed;left:0;top:0;height:3px;background:var(--accent);z-index:46;
+    width:0;transition:width .28s ease}
+
+  #hint{position:fixed;left:50%;bottom:60px;transform:translateX(-50%);
+    z-index:15;font-size:12.5px;opacity:0;transition:opacity .4s;
+    background:rgba(11,31,42,.7);padding:6px 12px;border-radius:8px;pointer-events:none}
+  #hint.show{opacity:.85}
+
+  #backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:29;
+    opacity:0;pointer-events:none;transition:opacity .25s}
+
+  body.hidecursor{cursor:none}
+
+  /* ---------- mobile: sidebar as overlay ---------- */
+  @media (max-width:820px){
+    #sidebar{position:fixed;left:0;top:0;bottom:0;margin-left:calc(-1 * var(--menu-w));
+      box-shadow:0 0 40px rgba(0,0,0,.5)}
+    body.menu-open #sidebar{margin-left:0}
+    body.menu-open #backdrop{opacity:1;pointer-events:auto}
+    body.nomenu #sidebar{margin-left:calc(-1 * var(--menu-w))}
+    #menu-toggle{opacity:1}
+    .nav-zone{width:26%}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<button id="menu-toggle" aria-label="Men&uacute;" title="Men&uacute; (M)">&#9776;</button>
+
+<div id="app">
+  <nav id="sidebar" aria-label="&Iacute;ndice de diapositivas">
+    <div class="brand"><b>GRUPO FISCAL CONTABLE</b><span>Servicios Generales &middot; v5</span></div>
+    <ol id="toc"></ol>
+  </nav>
+
+  <main id="stage">
+    <div id="frame" aria-live="polite"></div>
+    <button class="nav-zone prev" id="zprev" aria-label="Anterior"></button>
+    <button class="nav-zone next" id="znext" aria-label="Siguiente"></button>
+  </main>
+</div>
+
+<div id="backdrop"></div>
+
+<div id="bar">
+  <button id="bmenu" title="&Iacute;ndice (M)">&#9776;</button>
+  <button id="bprev" title="Anterior (&larr;)">&#10094;</button>
+  <span id="counter">1 / 19</span>
+  <button id="bnext" title="Siguiente (&rarr;)">&#10095;</button>
+  <button id="bfull" title="Pantalla completa (F)">&#9974;</button>
+</div>
+
+<div id="hint">&larr; &rarr; navegar &nbsp;&bull;&nbsp; M &iacute;ndice &nbsp;&bull;&nbsp; F pantalla completa</div>
+
+<script>
+(function(){
+  "use strict";
+  var TOTAL = 19;
+  // Etiqueta del men&uacute; para cada una de las 19 diapositivas
+  var LABELS = [
+    "Portada",
+    "Contenido",
+    "Proteja su patrimonio",
+    "Sectores que atendemos",
+    "Cumplimiento Fiscal Integral (SAT)",
+    "Defensa Fiscal y Administrativa",
+    "Seguridad Social: IMSS e INFONAVIT",
+    "Cumplimiento Laboral y REPSE",
+    "Comercio Exterior y Aduanas",
+    "Precios de Transferencia",
+    "Impuestos Estatales y Municipales",
+    "Auditoría y Dictámenes",
+    "Cumplimiento Regulatorio y PLD",
+    "Consultoría de Negocio y CFO",
+    "Servicios Complementarios",
+    "Metodología y Modelos de Servicio",
+    "Nosotros",
+    "El Equipo",
+    "Hablemos de su empresa"
+  ];
+
+  var pad = function(n){ return (n<10?"0":"") + n; };
+  var src = function(n){ return "diapositivas/" + pad(n) + ".jpg"; };
+
+  var frame   = document.getElementById("frame");
+  var counter = document.getElementById("counter");
+  var progress= document.getElementById("progress");
+  var toc     = document.getElementById("toc");
+  var hint    = document.getElementById("hint");
+  var backdrop= document.getElementById("backdrop");
+  var isMobile= function(){ return window.matchMedia("(max-width:820px)").matches; };
+
+  // build slides
+  var imgs = [];
+  for (var i=1;i<=TOTAL;i++){
+    var im = document.createElement("img");
+    im.className = "slide";
+    im.alt = "Diapositiva " + i + ": " + LABELS[i-1];
+    im.decoding = "async";
+    im.loading = (i<=2 ? "eager" : "lazy");
+    im.src = src(i);
+    frame.appendChild(im);
+    imgs.push(im);
+  }
+
+  // build table of contents
+  var tocBtns = [];
+  for (var j=1;j<=TOTAL;j++){
+    (function(j){
+      var li = document.createElement("li");
+      var b  = document.createElement("button");
+      b.type = "button";
+      b.innerHTML = '<span class="num">'+j+'</span><span class="txt"></span>';
+      b.querySelector(".txt").textContent = LABELS[j-1];
+      b.addEventListener("click", function(){
+        go(j-1);
+        if (isMobile()) setMenu(false);
+      });
+      li.appendChild(b);
+      toc.appendChild(li);
+      tocBtns.push(li);
+    })(j);
+  }
+
+  var cur = 0;
+  function clamp(n){ return Math.max(0, Math.min(TOTAL-1, n)); }
+
+  function render(){
+    imgs.forEach(function(im,idx){ im.classList.toggle("active", idx===cur); });
+    tocBtns.forEach(function(li,idx){ li.classList.toggle("current", idx===cur); });
+    counter.textContent = (cur+1) + " / " + TOTAL;
+    progress.style.width = ((cur+1)/TOTAL*100) + "%";
+    var want = "#" + (cur+1);
+    if (location.hash !== want) history.replaceState(null,"",want);
+    document.title = (cur===0 ? "" : (cur+1)+". "+LABELS[cur]+" — ") + "Grupo Fiscal Contable";
+    // preload neighbours
+    [cur+1,cur+2,cur-1].forEach(function(k){
+      if (k>=0 && k<TOTAL && imgs[k].loading==="lazy"){ imgs[k].loading="eager"; imgs[k].src=src(k+1); }
+    });
+    // keep current TOC item visible
+    var liEl = tocBtns[cur];
+    if (liEl && liEl.scrollIntoView) liEl.scrollIntoView({block:"nearest"});
+  }
+
+  function go(n){ cur = clamp(n); render(); }
+  function next(){ go(cur+1); }
+  function prev(){ go(cur-1); }
+
+  // ---- menu ----
+  function setMenu(open){
+    if (isMobile()){
+      document.body.classList.toggle("menu-open", open);
+    } else {
+      document.body.classList.toggle("nomenu", !open);
+    }
+  }
+  function toggleMenu(){
+    if (isMobile()) setMenu(!document.body.classList.contains("menu-open"));
+    else setMenu(document.body.classList.contains("nomenu"));
+  }
+  document.getElementById("menu-toggle").addEventListener("click", toggleMenu);
+  document.getElementById("bmenu").addEventListener("click", toggleMenu);
+  backdrop.addEventListener("click", function(){ setMenu(false); });
+
+  // ---- nav controls ----
+  document.getElementById("zprev").addEventListener("click", prev);
+  document.getElementById("znext").addEventListener("click", next);
+  document.getElementById("bprev").addEventListener("click", prev);
+  document.getElementById("bnext").addEventListener("click", next);
+  document.getElementById("bfull").addEventListener("click", toggleFull);
+
+  document.addEventListener("keydown", function(e){
+    if (e.defaultPrevented) return;
+    switch(e.key){
+      case "ArrowRight": case "PageDown": case " ": case "Spacebar":
+        next(); e.preventDefault(); break;
+      case "ArrowLeft": case "PageUp":
+        prev(); e.preventDefault(); break;
+      case "Home": go(0); e.preventDefault(); break;
+      case "End": go(TOTAL-1); e.preventDefault(); break;
+      case "m": case "M": toggleMenu(); break;
+      case "f": case "F": toggleFull(); break;
+      case "Escape":
+        if (document.body.classList.contains("menu-open")) setMenu(false);
+        break;
+    }
+  });
+
+  // ---- swipe ----
+  var tx=0,ty=0,tt=0;
+  document.addEventListener("touchstart", function(e){
+    var t=e.changedTouches[0]; tx=t.clientX; ty=t.clientY; tt=Date.now();
+  }, {passive:true});
+  document.addEventListener("touchend", function(e){
+    var t=e.changedTouches[0], dx=t.clientX-tx, dy=t.clientY-ty, dt=Date.now()-tt;
+    if (dt<600 && Math.abs(dx)>45 && Math.abs(dx)>Math.abs(dy)*1.6){
+      if (dx<0) next(); else prev();
+    }
+  }, {passive:true});
+
+  // ---- fullscreen ----
+  var menuBeforeFS = null;
+  function toggleFull(){
+    var d = document;
+    if (!d.fullscreenElement){
+      if (d.documentElement.requestFullscreen) d.documentElement.requestFullscreen().catch(function(){});
+    } else {
+      if (d.exitFullscreen) d.exitFullscreen();
+    }
+  }
+  document.addEventListener("fullscreenchange", function(){
+    if (document.fullscreenElement){
+      menuBeforeFS = !document.body.classList.contains("nomenu");
+      if (!isMobile()) setMenu(false);
+    } else if (menuBeforeFS){
+      if (!isMobile()) setMenu(true);
+    }
+  });
+
+  // ---- auto-hide UI ----
+  var idleT;
+  function wake(){
+    document.body.classList.add("ui");
+    document.body.classList.remove("hidecursor");
+    clearTimeout(idleT);
+    idleT = setTimeout(function(){
+      document.body.classList.remove("ui");
+      if (!document.body.classList.contains("menu-open")) document.body.classList.add("hidecursor");
+    }, 2600);
+  }
+  ["mousemove","mousedown","touchstart","keydown"].forEach(function(ev){
+    document.addEventListener(ev, wake, {passive:true});
+  });
+
+  // ---- initial state ----
+  function fromHash(){
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m) cur = clamp(parseInt(m[1],10)-1);
+  }
+  window.addEventListener("hashchange", function(){ fromHash(); render(); });
+  window.addEventListener("resize", function(){
+    // clean up conflicting menu classes when crossing the breakpoint
+    if (isMobile()) document.body.classList.remove("nomenu");
+    else document.body.classList.remove("menu-open");
+  });
+
+  if (isMobile()) setMenu(false); // closed on phones
+  fromHash();
+  render();
+  wake();
+  hint.classList.add("show");
+  setTimeout(function(){ hint.classList.remove("show"); }, 3800);
+})();
+</script>
+</body>
+</html>
